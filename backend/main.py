@@ -188,7 +188,7 @@ def camera_candidates():
         def rank(i):
             if i >= len(names):
                 return 2
-            n = names[i].lower()
+            n = names[i].lower().replace("\u0196", "l")  # Elgato's name uses Ɩ (U+0196)
             if "elgato" in n or "camera hub" in n:
                 return 0
             if "obs" in n:
