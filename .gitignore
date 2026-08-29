@@ -18,4 +18,4 @@ build/
 Thumbs.db
 
 # Ignore backend cache
-backend/__pycache__/
+backend/__pycache__/"tool_output.txt"  

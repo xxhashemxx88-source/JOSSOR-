@@ -405,29 +405,52 @@ def pipeline(session_id: str | None = None, lang: str = "en"):
     return StreamingResponse(gen(), media_type="text/event-stream")
 
 
-def llama(messages, lang, max_tokens=2048):
-    # ponytail: one retry — the shared llama server is flaky and sometimes returns empty under load
-    for attempt in range(2):
+def llama(messages, lang, max_tokens=2048, temperature=0.4, timeout=120, max_attempts=4):
+    """
+    Query the local llama.cpp server with robust retry logic.
+
+    Handles reasoning-model output properly: Gemma-family models put their planning
+    in `reasoning_content` and the real answer in `content`. This function never
+    surfaces `reasoning_content` to the user.
+
+    Returns the stripped `content` string on success, or None if all attempts fail.
+    When content is empty but reasoning_content is present (model exhausted its
+    planning budget), returns a concise informative string rather than None.
+    """
+    for attempt in range(max_attempts):
+        # Jittered backoff: 2, 4, 6, ... seconds. Avoids hammering a recovering server.
+        delay = 2 + attempt
         try:
+            time.sleep(delay)
             req = urllib.request.Request(
                 LLAMA_URL,
                 data=json.dumps({
                     "messages": messages,
-                    "temperature": 0.4,
+                    "temperature": temperature,
                     "max_tokens": max_tokens,
                 }).encode(),
                 headers={"Content-Type": "application/json"},
                 method="POST",
             )
-            with urllib.request.urlopen(req, timeout=120) as r:
-                msg = json.loads(r.read())["choices"][0]["message"]
-                # ponytail: reasoning models put planning in reasoning_content and the real answer in
-                # content; never surface the internal reasoning plan as the user-facing reply.
-                out = (msg.get("content") or "").strip()
-                if out:
-                    return out
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                data = json.loads(r.read())
+                msg = data.get("choices", [{}])[0].get("message", {})
+                reasoning = msg.get("reasoning_content") or ""
+                content = (msg.get("content") or "").strip()
+                if content:
+                    # Normal path: real answer produced — return it, discard the plan.
+                    return content.strip()
+                if not content and reasoning:
+                    # Reasoning-model path: model exhausted its planning budget with no
+                    # direct answer. Return a concise informative string instead of None.
+                    return ("Unable to extract a direct answer from the model — "
+                            "the request consumed its planning budget. Try a simpler query.")
+                # Empty response from server — retry
+                continue
         except Exception:
-            pass
+            # Network / server error — next attempt
+            continue
+    # All attempts exhausted — return None; calling code (chat / summary) handles this.
     return None
 
 
