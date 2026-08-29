@@ -50,22 +50,6 @@ STATE_COLORS = {  # BGR tuples from the policy engine -> state name
     (0, 255, 0): "green",
 }
 
-# Curated, evidence-based answer for "what policies apply to this session".
-# The session records patient video/movement data and gives AI clinical feedback, so the
-# three readable governance docs are the honest, citable answer. (PDPL.pdf is image-only,
-# never cited.)
-POLICY_APPLY = {
-    "en": ("This session is governed by three Saudi policies: the SDAIA Privacy Policy "
-           "(the patient's video and movement data are personal data), the Executive "
-           "Regulations of Health Professions (gait feedback is a health-profession "
-           "activity), and the SDAIA AI Principles (the AI feedback must be transparent, "
-           "fair, and accountable)."),
-    "ar": ("تخضع هذه الجلسة لثلاث سياسات سعودية: سياسة خصوصية سدايا (فيديو المريض وبيانات "
-           "حركته بيانات شخصية)، واللوائح التنفيذية لنظام المهن الصحية (ملاحظات المشية "
-           "نشاط صحي مهني)، ومبادئ سدايا للذكاء الاصطناعي (يجب أن تكون ملاحظات الذكاء "
-           "الاصطناعي شفافة وعادلة وخاضعة للمساءلة)."),
-}
-
 
 def calculate_angle(a, b, c):
     radians = np.arctan2(c[1] - b[1], c[0] - b[0]) - np.arctan2(a[1] - b[1], a[0] - b[0])
@@ -434,7 +418,7 @@ def llama(messages, lang, max_tokens=2048, temperature=0.4, timeout=120, max_att
     planning budget), returns a concise informative string rather than None.
     """
     for attempt in range(max_attempts):
-        # Jittered backoff: 2, 4, 6, ... seconds. Avoids hammering a recovering server.
+        # Jittered backoff: 2, 3, 4, ... seconds. Avoids hammering a recovering server.
         delay = 2 + attempt
         try:
             time.sleep(delay)
@@ -444,6 +428,10 @@ def llama(messages, lang, max_tokens=2048, temperature=0.4, timeout=120, max_att
                     "messages": messages,
                     "temperature": temperature,
                     "max_tokens": max_tokens,
+                    # Cap the model's internal thinking so real content actually fits
+                    # in the token budget (Gemma reasoning models otherwise burn it all
+                    # on planning and emit an empty answer).
+                    "reasoning_budget": 0,
                 }).encode(),
                 headers={"Content-Type": "application/json"},
                 method="POST",
@@ -576,8 +564,10 @@ def chat(body: ChatIn):
         retrieved = k.retrieve(body.message)
     except Exception:
         k, retrieved = None, []
-    # "What policies apply to this session" -> curated evidence-based answer citing the
-    # readable governance docs (routed by kb.TOPIC_ROUTES), never session small-talk.
+    # Policy/session routing: "what policies apply to this session" -> the readable
+    # governance docs (kb.TOPIC_ROUTES). Cross-language queries score 0 against English
+    # docs, so this explicit question bypasses the score floor — the routed docs are
+    # authoritative for it.
     nq = kb._norm(body.message)
     policy_session_q = (
         (re.search(r"(what|which)\s+(policies?|regulations?|laws?)\s+(apply|applied|govern|relate)", nq)
@@ -585,31 +575,43 @@ def chat(body: ChatIn):
         or (re.search(r"(ما|اي)\s*(هي)?\s*(ال)?(سياسات|انظمه|لوائح|قوانين)", nq)
             and "جلسه" in nq)
     )
-    if policy_session_q and retrieved:
-        rel = [r for r in retrieved if r.get("routed")]
-        ev = []
-        for r in rel:
-            q = k.best_quote(r["doc"])
-            if q:
-                ev.append({"type": "kb", "title": kb._friendly(r["doc"]), "doc": r["doc"],
-                           "score": round(r["score"], 3), "quote": q})
-        return {"reply": POLICY_APPLY.get(body.lang, POLICY_APPLY["en"]),
-                "citations": k.citations(rel), "evidence": ev, "grounded": True}
-    # ponytail: honest grounding — only inject KB excerpts as evidence when the top hit
-    # actually clears the relevance floor (routed governance docs use a lower floor; the
-    # generic fallback path stays strict so session/general answers aren't misattributed).
     top = retrieved[0] if retrieved else None
     need = kb.ROUTED_FLOOR if (top and top.get("routed")) else kb.SCOPE_FLOOR
-    grounded = bool(top and top["score"] >= need)
-    evidence = (k.evidence(retrieved) if grounded else [])
+    grounded = bool(top and top["score"] >= need) or (policy_session_q and bool(retrieved))
     if grounded and retrieved:
-        # ponytail: this reasoning model burns its whole budget on planning for grounded
-        # (citation) queries and often never emits content — so answer directly from the top
-        # excerpt. It is fast, deterministic, honest, and always starts with the KB source.
-        out = k.fallback_answer(retrieved, body.lang)
-        # production: a grounded (governance) answer cites only KB sources; session numbers,
-        # if touched, belong in the answer text, not as a separate citation block.
-        return {"reply": out, "citations": k.citations(retrieved), "evidence": evidence, "grounded": True}
+        rel = [r for r in retrieved if r.get("routed")] if policy_session_q else retrieved
+
+        def quote_of(r):
+            t = kb._clean_text(r.get("text", "")).strip()
+            if r.get("score", 0) > 0 and t:
+                return t[:420]
+            return (k.best_quote(r["doc"]) or t)[:420]
+
+        # RAG: the LLM answers from the retrieved excerpts — never a hardcoded prefix —
+        # and is told to name the source document(s) it used.
+        ctx = "\n\n".join(
+            f"[{kb._friendly(r['doc'])}]\n{quote_of(r)}"
+            for r in rel[:3] if quote_of(r)
+        )
+        sys = (
+            "Answer the question using ONLY the knowledge-base excerpts provided. "
+            "Name the source document(s) your answer is based on. "
+            "2-4 sentences, no preamble. Reply in "
+            + ("Arabic" if body.lang == "ar" else "English") + "."
+        )
+        user = f"Knowledge base:\n{ctx}\n\nQuestion: {body.message}"
+        if policy_session_q:
+            user = ("Context: this session records a patient's video and movement data "
+                    "and produces AI gait feedback.\n\n" + user)
+        out = llama([{"role": "system", "content": sys}, {"role": "user", "content": user}],
+                    body.lang, max_tokens=2048)
+        if not out or "planning budget" in out:
+            # LLM failed — last resort is a real quote from the top excerpt, never invented text.
+            out = k.fallback_answer(rel, body.lang)
+        ev = [{"type": "kb", "title": kb._friendly(r["doc"]), "doc": r["doc"],
+               "score": round(r["score"], 3), "quote": quote_of(r)}
+              for r in rel[:3] if quote_of(r)]
+        return {"reply": out, "citations": k.citations(rel), "evidence": ev, "grounded": True}
     # session/general answers: show the session as the source of any numbers they report
     if stats:
         evidence = [{"type": "session", "id": session_id,
@@ -632,8 +634,8 @@ def chat(body: ChatIn):
         else "No session logged yet."
     )
     user += f"\n\nQuestion: {body.message}"
-    out = llama([{"role": "system", "content": sys}, {"role": "user", "content": user}], body.lang, max_tokens=800)
-    if not out:
+    out = llama([{"role": "system", "content": sys}, {"role": "user", "content": user}], body.lang, max_tokens=2048)
+    if not out or "planning budget" in out:
         return {"reply": ("تعذر الوصول إلى الخادم المحلي." if body.lang == "ar"
                           else "Could not reach the local LLM server."),
                 "citations": [], "evidence": evidence, "grounded": grounded}

@@ -288,7 +288,8 @@ class KB:
             if c["doc"] != doc:
                 continue
             t = _clean_text(c["text"]).strip()
-            if "www." in t or "SaudiMOH" in t or "moh.gov" in t.lower():
+            low = t.lower()
+            if any(x in low for x in ("www.", "saudimoh", "moh.gov", "about portal", "log in")):
                 continue
             letters = sum(1 for ch in t if ch.isalpha())
             if len(t) >= min_len and letters / max(len(t), 1) >= 0.5:
