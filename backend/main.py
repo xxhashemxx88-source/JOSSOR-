@@ -258,7 +258,10 @@ async def frame_stream(request: Request, s: Session):
             cv2.putText(frame, text, (10, 28), cv2.FONT_HERSHEY_SIMPLEX,
                         0.6, color or (220, 220, 220), 2, cv2.LINE_AA)
             writer.write(frame)
-            ok, buf = cv2.imencode(".jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, 80])
+            # ponytail: rotate only the DISPLAYED frame 90° right — camera, detection and
+            # the recorded video stay untouched.
+            disp = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+            ok, buf = cv2.imencode(".jpg", disp, [cv2.IMWRITE_JPEG_QUALITY, 80])
             if not ok:
                 continue
             yield b"--frame\r\nContent-Type: image/jpeg\r\n\r\n" + buf.tobytes() + b"\r\n"
