@@ -113,7 +113,7 @@ export function GameSessionModal({ onClose }: Props) {
           </div>
 
           <div className="p-6">
-            <div className="aspect-[3/4] rounded-2xl overflow-hidden bg-black border border-white/10 relative mx-auto max-w-sm">
+            <div className="aspect-video rounded-2xl overflow-hidden bg-black border border-white/10 relative">
               {running ? (
                 <img
                   src={`${API}/video_feed`}
