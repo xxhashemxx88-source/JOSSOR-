@@ -215,8 +215,7 @@ async def frame_stream(request: Request, s: Session):
     vdir = os.path.join(os.path.dirname(__file__), "sessions", "videos")
     os.makedirs(vdir, exist_ok=True)
     vid_path = os.path.join(vdir, f"{datetime.fromtimestamp(s.started).strftime('%Y%m%d_%H%M%S')}.mp4")
-    writer = cv2.VideoWriter(vid_path, cv2.VideoWriter_fourcc(*"mp4v"), 20.0,
-                             (int(cap.get(3)), int(cap.get(4))))
+    writer = None  # created on first frame so its size matches the vertical crop
     # async generator: Starlette reliably cancels/cleans these on client disconnect, so a
     # dropped /video_feed never leaks active_session (the sync-generator leak wedged the
     # feed as a permanent 409). is_disconnected() stops the loop and releases the camera.
@@ -257,6 +256,17 @@ async def frame_stream(request: Request, s: Session):
             cv2.rectangle(frame, (0, 0), (w, 40), (0, 0, 0), -1)
             cv2.putText(frame, text, (10, 28), cv2.FONT_HERSHEY_SIMPLEX,
                         0.6, color or (220, 220, 220), 2, cv2.LINE_AA)
+            # ponytail: vertical (portrait) capture — crop the center strip of a landscape
+            # frame so a standing patient fills a tall 3:4 view. Detection already ran on the
+            # full frame, so pose/angle accuracy is unaffected.
+            hh, ww = frame.shape[:2]
+            if ww > hh:
+                cw = int(hh * 3 / 4)
+                x0 = (ww - cw) // 2
+                frame = frame[:, x0:x0 + cw]
+            if writer is None:
+                hh, ww = frame.shape[:2]
+                writer = cv2.VideoWriter(vid_path, cv2.VideoWriter_fourcc(*"mp4v"), 20.0, (ww, hh))
             writer.write(frame)
             ok, buf = cv2.imencode(".jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, 80])
             if not ok:
