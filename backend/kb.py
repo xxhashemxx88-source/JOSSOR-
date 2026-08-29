@@ -39,6 +39,10 @@ TOPIC_ROUTES = [
     (r"cloud\s*comput|cloud\s*services", ["Cloud Computing Services Provisioning Regulations.pdf"]),
     (r"health\s*profession|medical|practitioner|healthcare", ["Executive-Regulations-Health-Profession.pdf"]),
     (r"cyber|security", ["86e09090-44e4-481f-bc28-355673607654_ECC--2024-EN.pdf"]),
+    # Generic governance questions ("what policies apply") -> the readable policy docs.
+    (r"polic(y|ies)|regulation(s)?|compliance|governance|قوانين|قانون|لوائح|لائحه|انظمه|سياسات|سياسه",
+     ["SDAIA _ Privacy Policy _ Saudi Data & AI Authority.pdf",
+      "Executive-Regulations-Health-Profession.pdf", "ai-principles.pdf"]),
 ]
 _UNREADABLE = {  # image-only PDFs: extracted text is OCR junk, never cite them
     "PDPL.pdf",
@@ -277,6 +281,19 @@ class KB:
             out.append({"doc": r["doc"], "title": _friendly(r["doc"]),
                         "sha256": self.sha_map.get(r["doc"], ""), "score": round(r["score"], 3)})
         return out
+
+    def best_quote(self, doc, min_len=140):
+        """First body chunk of `doc` that is mostly readable after cleaning (skip covers/headers)."""
+        for c in self.chunks:
+            if c["doc"] != doc:
+                continue
+            t = _clean_text(c["text"]).strip()
+            if "www." in t or "SaudiMOH" in t or "moh.gov" in t.lower():
+                continue
+            letters = sum(1 for ch in t if ch.isalpha())
+            if len(t) >= min_len and letters / max(len(t), 1) >= 0.5:
+                return t[:420]
+        return None
 
     def evidence(self, retrieved):
         """Real supporting quotes for the UI: title + snippet + score per retrieved doc."""

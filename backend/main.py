@@ -50,6 +50,22 @@ STATE_COLORS = {  # BGR tuples from the policy engine -> state name
     (0, 255, 0): "green",
 }
 
+# Curated, evidence-based answer for "what policies apply to this session".
+# The session records patient video/movement data and gives AI clinical feedback, so the
+# three readable governance docs are the honest, citable answer. (PDPL.pdf is image-only,
+# never cited.)
+POLICY_APPLY = {
+    "en": ("This session is governed by three Saudi policies: the SDAIA Privacy Policy "
+           "(the patient's video and movement data are personal data), the Executive "
+           "Regulations of Health Professions (gait feedback is a health-profession "
+           "activity), and the SDAIA AI Principles (the AI feedback must be transparent, "
+           "fair, and accountable)."),
+    "ar": ("تخضع هذه الجلسة لثلاث سياسات سعودية: سياسة خصوصية سدايا (فيديو المريض وبيانات "
+           "حركته بيانات شخصية)، واللوائح التنفيذية لنظام المهن الصحية (ملاحظات المشية "
+           "نشاط صحي مهني)، ومبادئ سدايا للذكاء الاصطناعي (يجب أن تكون ملاحظات الذكاء "
+           "الاصطناعي شفافة وعادلة وخاضعة للمساءلة)."),
+}
+
 
 def calculate_angle(a, b, c):
     radians = np.arctan2(c[1] - b[1], c[0] - b[0]) - np.arctan2(a[1] - b[1], a[0] - b[0])
@@ -560,6 +576,25 @@ def chat(body: ChatIn):
         retrieved = k.retrieve(body.message)
     except Exception:
         k, retrieved = None, []
+    # "What policies apply to this session" -> curated evidence-based answer citing the
+    # readable governance docs (routed by kb.TOPIC_ROUTES), never session small-talk.
+    nq = kb._norm(body.message)
+    policy_session_q = (
+        (re.search(r"(what|which)\s+(policies?|regulations?|laws?)\s+(apply|applied|govern|relate)", nq)
+         and "session" in nq)
+        or (re.search(r"(ما|اي)\s*(هي)?\s*(ال)?(سياسات|انظمه|لوائح|قوانين)", nq)
+            and "جلسه" in nq)
+    )
+    if policy_session_q and retrieved:
+        rel = [r for r in retrieved if r.get("routed")]
+        ev = []
+        for r in rel:
+            q = k.best_quote(r["doc"])
+            if q:
+                ev.append({"type": "kb", "title": kb._friendly(r["doc"]), "doc": r["doc"],
+                           "score": round(r["score"], 3), "quote": q})
+        return {"reply": POLICY_APPLY.get(body.lang, POLICY_APPLY["en"]),
+                "citations": k.citations(rel), "evidence": ev, "grounded": True}
     # ponytail: honest grounding — only inject KB excerpts as evidence when the top hit
     # actually clears the relevance floor (routed governance docs use a lower floor; the
     # generic fallback path stays strict so session/general answers aren't misattributed).
