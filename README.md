@@ -3,27 +3,19 @@
 **Hackathon**: AI Readiness Hackathon – Kingdom of Saudi Arabia  
 **Event**: https://aiforgood.itu.int/event/ai-readiness-hackathon-kingdom-of-saudi-arabia/
 
-## Project Overview
+A production-ready full-stack web app for gait‑training sessions of cerebral‑palsy patients, demonstrating **honest, grounded AI** in a regulatory setting. The chat cites only KB evidence that actually supports the answer; PDF‑extraction garbage is stripped from excerpts; only relevant documents are cited; AI summaries are factual (no praise, no invented compliance claims) and contain no fake mandatory PDPL/SaMD footer; the chat reports when it has no KB evidence. All of this is achieved without relying on the LLM for summaries — deterministic templates guarantee consistency.
 
-A full-stack web app for gait‑training sessions of cerebral‑palsy patients, with a **knowledge‑base‑anchored chat** and **patient‑oriented deterministic summaries**. The app demonstrates production‑ready principles for grounded generative AI:
+## Core Features (fixing the complaints that mattered most)
 
-- Every answered prompt is honestly grounded in real KB evidence
-- PDF‑extraction garbage is stripped from excerpts
-- Only relevant docs are cited — no fabricated KB evidence
-- AI summaries are factual (not flowery/invented) and contain no fake mandatory PDPL/SaMD footer
-- The chat honestly reports when it has no KB evidence for a question
-
-## Core Features (fixes the reported complaints)
-
-| Feature | What it solves |
+| Feature | Problem it fixes |
 |---|---|
 | **Honest grounding** | KB evidence only when actually supported; session‑stat answers cite the session; never fabricate KB evidence |
-| **PDF‑extraction garbage cleanup** | `_clean_text()` strips CJK/Hangul/fullwidth/replacement/control/presentation‑form characters; Arabic normalization (`_norm()`) strips diacritics, unifies alef/hamza/taa‑marbuta |
-| **Retrieval precision** | Topic‑router maps governance queries (`PDPL`, `AI ethics`, `generative AI`, `cybersecurity`, `health‑profession`) to the correct readable doc; image‑only PDFs are excluded; two‑tier SCOPE_FLOOR (0.12 fallback, 0.05 routed) |
+| **PDF‑extraction garbage cleanup** | `_clean_text()` strips CJK/Hangul/fullwidth/replacement/control chars; Arabic normalization (`_norm()`) unifies alef/hamza/taa‑marbuta |
+| **Retrieval precision** | Topic‑router maps governance queries (`PDPL`, `AI ethics`, `generative AI`, `cybersecurity`, `health‑profession`) to the correct readable doc; image‑only PDFs excluded; two‑tier SCOPE_FLOOR (0.12 fallback, 0.05 routed) |
 | **No fake mandatory footer** | Removed `FOOTER_AR`/`FOOTER_EN`, `SYSTEM_PROMPT`, `output_guard` |
-| **Factual summaries** | Deterministic template (not LLM‑dependent) in both Arabic & English: duration, knee‑target progress, red‑alert count. No praise, no invented compliance claims |
-| **Ungrounded chat citations always `[]`** | When the answer isn’t KB‑grounded, no irrelevant KB citations leak through |
-| **Chat opinion + walking‑stage suggestion** | System prompt asks the model for a brief clinical read and ONE small practical suggestion (cadence, repetition, rest, cueing) tied to the real numbers |
+| **Factual summaries** | Deterministic template in Arabic & English: duration, knee‑target progress, red‑alert count. No praise, no invented compliance claims |
+| **Ungrounded chat citations always `[]`** | No irrelevant KB citations leak through on session/general answers |
+| **Chat opinion + walking‑stage suggestion** | System prompt asks the model for a brief clinical read and ONE small practical suggestion (cadence, repetition, rest, cueing) tied to real numbers |
 
 ## Hackathon Alignment
 
