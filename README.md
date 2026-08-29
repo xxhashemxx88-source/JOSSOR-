@@ -58,9 +58,8 @@ pushd frontend
 ## Known Limitations
 
 - **LLM flakiness** – ungrounded chat sometimes returns `"Could not reach the local LLM server."` (port 8081 timeout). The shared llama.cpp server is unstable under load.
-- **Arabic PDPL doc is image‑only** – zero extractable text, so it never surfaces in retrieval. Honest: we never cite an unreadable source.
 - **No user authentication** – any user can start a new gait‑training session; existing session JSONs are left as‑is.
-- **Rich clinical view chart** – a target 170° line with risk zones still pending (visual communication pending).
+
 
 ## License
 
