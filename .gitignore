@@ -1,3 +1,21 @@
-"node_modules/"  
-"dist/"  
-"*.pyc"  
+# Ignore Python bytecode
+__pycache__/
+*.py[c]
+*.pyo
+*.pyd
+
+# Ignore node_modules and dist
+node_modules/
+dist/
+build/
+
+# Ignore IDE files
+.vscode/
+.idea/
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore backend cache
+backend/__pycache__/
