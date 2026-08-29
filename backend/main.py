@@ -179,8 +179,30 @@ def get_detector():
 
 
 async def frame_stream(request: Request, s: Session):
-    cap = cv2.VideoCapture(0)
-    if not cap.isOpened():
+    # ponytail: cameras move between indexes (virtual cams, other apps) — try 0..3, and
+    # verify a REAL frame can be read: some devices open but never deliver (dead virtual
+    # cams), which would otherwise leave the stream silently empty forever.
+    cap = None
+    for idx in range(4):
+        c = cv2.VideoCapture(idx)
+        if not c.isOpened():
+            c.release()
+            continue
+        probe = {}
+
+        def read_probe():
+            probe["ok"], probe["frame"] = c.read()
+
+        t = threading.Thread(target=read_probe, daemon=True)
+        t.start()
+        t.join(2.0)
+        if t.is_alive() or not probe.get("ok"):
+            c.release()
+            continue
+        cap = c
+        break
+    if cap is None:
+        print("[cam] NO WORKING CAMERA FOUND", flush=True)
         yield b"--frame\r\nContent-Type: text/plain\r\n\r\nCamera unavailable\r\n\r\n"
         return
     loop = asyncio.get_event_loop()
