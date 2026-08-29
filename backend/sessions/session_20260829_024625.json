@@ -1,0 +1,14 @@
+{
+  "id": "20260829_024625",
+  "started": "2026-08-29T02:46:25.799139",
+  "patient": "patient_001_CP",
+  "duration_sec": 22.4,
+  "frames": 0,
+  "pose_frames": 0,
+  "avg_angle": null,
+  "min_angle": null,
+  "max_angle": null,
+  "red_alerts": 0,
+  "time_by_state": {},
+  "events": []
+}

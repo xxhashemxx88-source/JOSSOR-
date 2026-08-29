@@ -1,0 +1,16 @@
+{
+  "id": "20260829_031529",
+  "started": "2026-08-29T03:15:29.046475",
+  "patient": "patient_001_CP",
+  "duration_sec": 4.8,
+  "frames": 0,
+  "total_frames": 266,
+  "video": "sessions/videos/20260829_031529.mp4",
+  "pose_frames": 0,
+  "avg_angle": null,
+  "min_angle": null,
+  "max_angle": null,
+  "red_alerts": 0,
+  "time_by_state": {},
+  "events": []
+}

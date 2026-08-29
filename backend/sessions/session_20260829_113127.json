@@ -1,0 +1,205 @@
+{
+  "id": "20260829_113127",
+  "started": "2026-08-29T11:31:27.119848",
+  "patient": "patient_001_CP",
+  "duration_sec": 7.3,
+  "frames": 31,
+  "total_frames": 57,
+  "video": "sessions/videos/20260829_113127.mp4",
+  "pose_frames": 31,
+  "avg_angle": 179.0,
+  "min_angle": 178.2,
+  "max_angle": 179.9,
+  "red_alerts": 0,
+  "time_by_state": {
+    "green": 5.7
+  },
+  "events": [
+    {
+      "ts": 0.7206065654754639,
+      "angle": 179.3,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "ts": 1.3189942836761475,
+      "angle": 178.6,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "ts": 1.353248119354248,
+      "angle": 178.6,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "ts": 1.3882436752319336,
+      "angle": 178.5,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "ts": 1.4190785884857178,
+      "angle": 178.5,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "ts": 1.4494125843048096,
+      "angle": 179.5,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "ts": 1.4820330142974854,
+      "angle": 179.6,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "ts": 1.5119585990905762,
+      "angle": 178.9,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "ts": 1.542309045791626,
+      "angle": 179.9,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "ts": 1.5775630474090576,
+      "angle": 179.9,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "ts": 1.6090083122253418,
+      "angle": 178.7,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "ts": 1.6416382789611816,
+      "angle": 178.6,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "ts": 1.6720554828643799,
+      "angle": 178.6,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "ts": 1.703888177871704,
+      "angle": 178.9,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "ts": 1.7827391624450684,
+      "angle": 178.5,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "ts": 1.8166148662567139,
+      "angle": 179.2,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "ts": 1.8501381874084473,
+      "angle": 179.2,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "ts": 1.880777359008789,
+      "angle": 178.2,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "ts": 1.9110188484191895,
+      "angle": 178.9,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "ts": 1.9428017139434814,
+      "angle": 179.4,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "ts": 1.9739055633544922,
+      "angle": 179.4,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "ts": 2.0041675567626953,
+      "angle": 179.2,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "ts": 2.03651762008667,
+      "angle": 179.2,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "ts": 2.069003105163574,
+      "angle": 179.5,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "ts": 2.1020772457122803,
+      "angle": 179.5,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "ts": 2.13455867767334,
+      "angle": 179.5,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "ts": 2.168724536895752,
+      "angle": 179.1,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "ts": 2.2011096477508545,
+      "angle": 179.1,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "ts": 2.232522964477539,
+      "angle": 178.4,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "ts": 2.263430595397949,
+      "angle": 178.8,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "ts": 2.301703453063965,
+      "angle": 178.8,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    }
+  ]
+}

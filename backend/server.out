@@ -1,0 +1,24 @@
+INFO:     Started server process [24364]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     127.0.0.1:61490 - "GET /api/sessions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61490 - "GET /api/session?session_id=20260829_113230 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61490 - "GET /api/pipeline?lang=ar HTTP/1.1" 200 OK
+Ignoring wrong pointing object 12 0 (offset 0)
+Ignoring wrong pointing object 6 0 (offset 0)
+Ignoring wrong pointing object 10 0 (offset 0)
+Ignoring wrong pointing object 12 0 (offset 0)
+Ignoring wrong pointing object 14 0 (offset 0)
+Ignoring wrong pointing object 56 0 (offset 0)
+Ignoring wrong pointing object 126 0 (offset 0)
+Ignoring wrong pointing object 8 0 (offset 0)
+Ignoring wrong pointing object 73 0 (offset 0)
+Ignoring wrong pointing object 76 0 (offset 0)
+Ignoring wrong pointing object 6 0 (offset 0)
+Ignoring wrong pointing object 9 0 (offset 0)
+Ignoring wrong pointing object 12 0 (offset 0)
+Ignoring wrong pointing object 15 0 (offset 0)
+Ignoring wrong pointing object 17 0 (offset 0)
+Ignoring wrong pointing object 21 0 (offset 0)
+INFO:     127.0.0.1:50069 - "POST /api/chat HTTP/1.1" 200 OK

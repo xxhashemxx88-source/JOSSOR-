@@ -1,0 +1,115 @@
+{
+  "id": "20260829_012422",
+  "started": "2026-08-29T01:24:22.600981",
+  "patient": "patient_001_CP",
+  "duration_sec": 46.0,
+  "frames": 20,
+  "pose_frames": 20,
+  "avg_angle": 92.7,
+  "min_angle": 4.5,
+  "max_angle": 179.9,
+  "red_alerts": 12,
+  "time_by_state": {},
+  "events": [
+    {
+      "angle": 146.2,
+      "state": "orange",
+      "text": "Gentle correction: Try to push knees back."
+    },
+    {
+      "angle": 98.3,
+      "state": "red",
+      "text": "ALERT: High Fall Risk! Straighten legs!"
+    },
+    {
+      "angle": 171.2,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "angle": 4.6,
+      "state": "red",
+      "text": "ALERT: High Fall Risk! Straighten legs!"
+    },
+    {
+      "angle": 4.5,
+      "state": "red",
+      "text": "ALERT: High Fall Risk! Straighten legs!"
+    },
+    {
+      "angle": 20.4,
+      "state": "red",
+      "text": "ALERT: High Fall Risk! Straighten legs!"
+    },
+    {
+      "angle": 17.8,
+      "state": "red",
+      "text": "ALERT: High Fall Risk! Straighten legs!"
+    },
+    {
+      "angle": 48.8,
+      "state": "red",
+      "text": "ALERT: High Fall Risk! Straighten legs!"
+    },
+    {
+      "angle": 177.4,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "angle": 177.9,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "angle": 177.3,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "angle": 155.2,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "angle": 139.6,
+      "state": "red",
+      "text": "ALERT: High Fall Risk! Straighten legs!"
+    },
+    {
+      "angle": 52.0,
+      "state": "red",
+      "text": "ALERT: High Fall Risk! Straighten legs!"
+    },
+    {
+      "angle": 9.7,
+      "state": "red",
+      "text": "ALERT: High Fall Risk! Straighten legs!"
+    },
+    {
+      "angle": 46.5,
+      "state": "red",
+      "text": "ALERT: High Fall Risk! Straighten legs!"
+    },
+    {
+      "angle": 179.9,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    },
+    {
+      "angle": 31.3,
+      "state": "red",
+      "text": "ALERT: High Fall Risk! Straighten legs!"
+    },
+    {
+      "angle": 16.6,
+      "state": "red",
+      "text": "ALERT: High Fall Risk! Straighten legs!"
+    },
+    {
+      "angle": 178.3,
+      "state": "green",
+      "text": "Excellent walking posture! Keep going!"
+    }
+  ]
+}
