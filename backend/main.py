@@ -178,12 +178,35 @@ def get_detector():
     return detector
 
 
+def camera_candidates():
+    """Camera indexes to try, preferring Camera Hub (Elgato) over OBS and other cams."""
+    order = list(range(4))
+    try:
+        from pygrabber.dshow_graph import FilterGraph
+        names = FilterGraph().get_input_devices()
+
+        def rank(i):
+            if i >= len(names):
+                return 2
+            n = names[i].lower()
+            if "elgato" in n or "camera hub" in n:
+                return 0
+            if "obs" in n:
+                return 2
+            return 1
+
+        order = sorted(order, key=lambda i: (rank(i), i))
+    except Exception:
+        pass
+    return order
+
+
 async def frame_stream(request: Request, s: Session):
     # ponytail: cameras move between indexes (virtual cams, other apps) — try 0..3, and
     # verify a REAL frame can be read: some devices open but never deliver (dead virtual
     # cams), which would otherwise leave the stream silently empty forever.
     cap = None
-    for idx in range(4):
+    for idx in camera_candidates():
         c = cv2.VideoCapture(idx)
         if not c.isOpened():
             c.release()
