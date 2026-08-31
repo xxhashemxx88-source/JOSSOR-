@@ -3,6 +3,8 @@
 **Hackathon**: AI Readiness Hackathon – Kingdom of Saudi Arabia  
 **Event**: https://aiforgood.itu.int/event/ai-readiness-hackathon-kingdom-of-saudi-arabia/
 
+Note: the knowledge base in backend
+
 A production-ready full-stack web app for gait‑training sessions of cerebral‑palsy patients, demonstrating **honest, grounded AI** in a regulatory setting. The chat cites only KB evidence that actually supports the answer; PDF‑extraction garbage is stripped from excerpts; only relevant documents are cited; AI summaries are factual (no praise, no invented compliance claims) and contain no fake mandatory PDPL/SaMD footer; the chat reports when it has no KB evidence. All of this is achieved without relying on the LLM for summaries — deterministic templates guarantee consistency.
 
 ## Core Features (fixing the complaints that mattered most)
